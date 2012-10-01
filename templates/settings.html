@@ -1,0 +1,51 @@
+$def with (user, bio, env, mod)
+
+$code:
+    def selected(v):
+        return 'selected="selected"' if v == env else ''
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> 饭否 | 简单设置</title>
+<link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
+<body>
+<h1><a href="/home?v=$time.time()"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
+<h2>简单设置</h2>
+$if mod:
+    <p class="n">保存成功！</p>
+$if mod > 1:
+    <p class="n">需要<a href="/authorize" class="p">验证</a></p>
+<form method="post" action="/settings">
+<p>昵称：<br/><input name="name" type="text" class="i" value="$user['name']" maxlength="12" /></p>
+<p>自述：<br/><textarea maxlength="140" class="i" name="bio" rows="4">$bio</textarea></p>
+<p>Consumer：<br/>
+<select name="consumer">
+<option value="0" $selected('0')>上邪</option>
+<option value="1" $selected('1')>Mr.Greeting</option>
+<option value="2" $selected('2')>Mrs.Greeting</option>
+<option value="3" $selected('3')>叶同学专用</option>
+</select>
+</p>
+<p><input type="submit" value="保存" /></p>
+</form>
+<div id="nav">
+<p class="s">
+0<a href="/home" accesskey="0">首页</a>
+1<a href="/$user['id']"  accesskey="1">空间</a>
+2<a href="/friends" accesskey="2">关注的人</a>
+7<a href="/settings" accesskey="7">设置</a>
+<br />
+3<a href="/browse" accesskey="3">随便看看</a>
+8<a href="/photo.upload" accesskey="8">发照片</a>
+9<a href="/search" accesskey="9">搜索</a>
+</p>
+</div>
+<br/>
+<p>
+<a href="/autologin.confirm">存为书签</a> | <a href="/logout/$utils.b64str()">退出</a></p>
+<div id="ft">&copy; 2012 fanfou.com</div>
+<p>[$utils.now()]</p>
+</body>
+</html>

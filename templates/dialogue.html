@@ -1,0 +1,76 @@
+$def with (user, show, data, page, notice)
+
+$code:
+    def gender():
+        sex = { '男': '他', '女': '她'}
+        return sex.get(show['gender'], '他')
+
+    def photos_count():
+        return '300+' if isinstance(show['photos_count'], float) else show['photos_count']
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> 饭否 | $show['name']</title>
+<link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
+<body>
+<h1><a href="/home?v=$time.time()"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
+$if notice['direct_messages']:
+    <p class="n"><a href="/privatemsg">你有 $notice['direct_messages'] 条新私信</a></p>
+$if notice.get('action'):
+    <p class="n">$notice['action']</p>
+<p><img src="$show['profile_image_url_large']" alt="$show['id']" /></p>
+$if user['id'] != show['id']: 
+    $if not show['following']:
+        <form method="post" action="/friend.add/$show['id']">
+        <input type="hidden" name="name" value="$show['name']" />
+        <input type="hidden" name="referer" value="/$show['id']" />
+        <input type="submit" value="关注此人" /></form>
+    <p class="a"><a href="/msg.new/$show['id']">给$gender()留言</a> | <a href="/privatemsg.create/$show['id']">发送私信</a> | 
+    $if show['following']: <a href="/friend.remove/$show['id']">取消关注</a> | 
+    <a href="/userview/$show['id']">$gender()关注的消息</a> | <a href="/dialogue/$show['id']">和$gender()的私信</a></p>
+<h2>和$show['name']的私信</h2>
+$for item in data:
+    <p>
+    $if item['sender']['id'] == notice['lover']: <span style="color:red;">♥</span>
+    <a href="/$item['sender']['id']" class="p">$item['sender']['name']</a> @<a href="/$item['recipient']['id']">$item['recipient']['name']</a> $item['text'] 
+    <span class="t">$utils.format_time(item['created_at'])</span>
+    $if item.get('in_reply_to'):
+        <span class="a">&nbsp;<a href="/privatemsg/$item['in_reply_to']['id']/sent/$page">>></a>&nbsp;</span>
+    $if item['sender']['id'] != user['id']:
+        <span class="a"><a href="/privatemsg.reply/$item['id']">回复</a> 
+    <span class="a"><a href="/privatemsg.del/$item['id']">删除</a>
+$if page > 1:
+    <p>6<a href="/dialogue/$show['id']/p.$(page+1)" accesskey="6">下页</a> | 4<a href="/dialogue/$show['id']/p.$(page-1)" accesskey="4">上页</a></p>
+$elif data:
+    <p>6<a href="/dialogue/$show['id']/p.2" accesskey="6">下页</a>
+<h2>$show['name']的资料</h2>
+$if show['gender']: <p>性别：$show['gender']</p>
+$if show['birthday']: <p>生日：$utils.format_birthday(show['birthday'])</p>
+$if show['location']: <p>所在地：$show['location']</p>
+$if show['url']: <p>网站：<a href="$show['url']">$show['url']</a></p>
+$if show['description']: <p>自述：$:show['description'].replace('\n', '<br />') </p>
+<p><a href="/friends/$show['id']">$gender()关注的人($show['friends_count'])</a><br />
+<a href="/followers/$show['id']">关注$gender()的人($show['followers_count'])</a><br />
+<a href="/$show['id']">消息($show['statuses_count'])</a><br />
+<a href="/favorites/$show['id']">收藏($show['favourites_count'])</a><br />
+<a href="/album/$show['id']">照片($photos_count())</a><br /></p>
+<div id="nav">
+<p class="s">
+0<a href="/home" accesskey="0">首页</a>
+1<a href="/$user['id']"  accesskey="1">空间</a>
+2<a href="/friends" accesskey="2">关注的人</a>
+7<a href="/settings" accesskey="7">设置</a>
+<br />
+3<a href="/browse" accesskey="3">随便看看</a>
+8<a href="/photo.upload" accesskey="8">发照片</a>
+9<a href="/search" accesskey="9">搜索</a>
+</p>
+</div>
+<br/>
+<p><a href="/logout/$utils.b64str()">退出</a></p>
+<div id="ft">&copy; 2012 fanfou.com</div>
+<p>[$utils.now()]</p>
+</body>
+</html>

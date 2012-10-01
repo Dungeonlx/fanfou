@@ -1,0 +1,58 @@
+$def with (user, show, item, idx, notice)
+
+$code:
+    def who():
+        return '我' if user['id'] == show['id'] else show['name']
+
+    def count():
+        count = '300+' if isinstance(show['photos_count'], float) else show['photos_count']
+        return '第 %s 张 / %s 张' % (idx, count)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> 饭否 | $who()的照片</title>
+<link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
+<body>
+<h1><a href="/home?v=$time.time()"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
+$if notice['direct_messages']:
+    <p class="n"><a href="/privatemsg">你有 $notice['direct_messages'] 条新私信</a></p>
+<h2><a href="/$show['id']">$who()</a> 的照片</h2>
+<p class="t">$count()</p><p class="b"><a href="/album/$show['id']">返回$who()的所有照片</a></p>
+<p><a href="/photo/$show['id']/$(idx+1)"><img src="$item['photo']['imageurl']" alt="$item['photo']['imageurl']" /></a></p>
+<p>$:item['text'].replace('http://fanfou.com', '') <span class="t">$utils.format_time(item['created_at'])&nbsp;通过$:item['source'].replace('http://fanfou.com', '')</span></p>
+$if idx < show['photos_count']:
+    <p>6<a href="/photo/$show['id']/$(idx+1)" accesskey="6">下一张</a>
+    $if idx > 1:  | 
+$if idx > 1:
+    <a href="/photo/$show['id']/$(idx-1)" accesskey="4">上一张</a>4
+<br /><a href="/photo.normal/$show['id']/$idx">查看大图</a></p>
+<p>
+$if item['user']['id'] == user['id']:
+    <span class="a"><a href="/photo.del/$item['id']">删除</a></span>
+$else:
+    <span class="a"><a href="/msg.reply/$item['id']">回复</a></span>
+<span class="a"><a href="/msg.forward/$item['id']">转发</a></span>
+$if item['favorited']:
+    <span class="a"><a href="/msg.favorite.del/$item['id']">取消</a></span></p>
+$else:
+    <span class="a"><a href="/msg.favorite.add/$item['id']">收藏</a></span></p>
+<div id="nav">
+<p class="s">
+0<a href="/home" accesskey="0">首页</a>
+1<a href="/$user['id']"  accesskey="1">空间</a>
+2<a href="/friends" accesskey="2">关注的人</a>
+7<a href="/settings" accesskey="7">设置</a>
+<br />
+3<a href="/browse" accesskey="3">随便看看</a>
+8<a href="/photo.upload" accesskey="8">发照片</a>
+9<a href="/search" accesskey="9">搜索</a>
+</p>
+</div>
+<br/>
+<p><a href="/logout/$utils.b64str()">退出</a></p>
+<div id="ft">&copy; 2012 fanfou.com</div>
+<p>[$utils.now()]</p>
+</body>
+</html>

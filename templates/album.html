@@ -1,0 +1,56 @@
+$def with (user, visible, show, data, page, notice)
+
+$code:
+    def who():
+        return '我' if user['id'] == show['id'] else show['name']
+
+    def count():
+        count = '300+' if isinstance(show['photos_count'], float) else show['photos_count']
+        start = (page-1)* 10 +1
+        end = start + 9
+        return '第 %s-%s 张 / %s 张' % (start, end, count)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> 饭否 | $who()照片</title>
+<link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
+<body>
+<h1><a href="/home?v=$time.time()"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
+$if notice['direct_messages']:
+    <p class="n"><a href="/privatemsg">你有 $notice['direct_messages'] 条新私信</a></p>
+<h2><a href="/paranoia7">$who()</a> 的照片</h2>
+<p class="t">$count()</p><p class="b"><a href="/paranoia7">返回$who()的空间</a></p>
+$if visible:
+    <table>
+    $for item in data:
+        $if loop.odd: <tr>
+        <td><a href="/photo/$show['id']/$((page-1)*10+loop.index)"><img src="$item['photo']['thumburl']" alt="照片" title="$item['text']" /></a></td>
+        $if loop.even: </tr>
+    </table>
+    $if page*10 < show['photos_count']:
+        <p>6<a href="/album/$show['id']/p.$(page+1)" accesskey="6">下页</a>
+        $if page > 1:  | 
+    $if page > 1:
+        4<a href="/album/$show['id']/p.$(page-1)" accesskey="4">上页</a></p>
+$else:
+    <p>我只向关注我的人公开我的裸照，<a href="/friend.add/$show['id']">关注我</a>。</p>
+<div id="nav">
+<p class="s">
+0<a href="/home" accesskey="0">首页</a>
+1<a href="/$user['id']"  accesskey="1">空间</a>
+2<a href="/friends" accesskey="2">关注的人</a>
+7<a href="/settings" accesskey="7">设置</a>
+<br />
+3<a href="/browse" accesskey="3">随便看看</a>
+8<a href="/photo.upload" accesskey="8">发照片</a>
+9<a href="/search" accesskey="9">搜索</a>
+</p>
+</div>
+<br/>
+<p><a href="/logout/$utils.b64str()">退出</a></p>
+<div id="ft">&copy; 2012 fanfou.com</div>
+<p>[$utils.now()]</p>
+</body>
+</html>
